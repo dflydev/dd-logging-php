@@ -25,7 +25,7 @@ abstract class dd_logging_AbstractLogger implements dd_logging_ILogger {
      * Constructor
      * @param $className
      */
-    protected function __construct($className = null) {
+    public function __construct($className = null) {
         if ( $className === null ) {
 
             foreach ( debug_backtrace() as $trace ) {

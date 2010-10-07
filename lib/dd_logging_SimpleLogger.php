@@ -5,14 +5,6 @@ require_once('dd_logging_AbstractLogger.php');
 class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
     
     /**
-     * Constructor
-     * @param $className
-     */
-    public function __construct($className = null) {
-        parent::__construct($className);
-    }
-    
-    /**
      * (non-PHPdoc)
      * @see dd_logging_ILogger::trace()
      */
