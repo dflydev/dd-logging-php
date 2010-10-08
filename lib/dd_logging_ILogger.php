@@ -39,11 +39,42 @@ interface dd_logging_ILogger {
     public function fatal($message);
     
     /**
+     * Is trace enabled?
+     * @return bool
+     */
+    public function isTraceEnabled();
+
+    /**
      * Is debug enabled?
      * @return bool
      */
     public function isDebugEnabled();
+    
+    /**
+     * Is info enabled?
+     * @return bool
+     */
+    public function isInfoEnabled();
 
+    /**
+     * Is warn enabled?
+     * @return bool
+     */
+    public function isWarnEnabled();
+
+    /**
+     * Is error enabled?
+     * @return bool
+     */
+    public function isErrorEnabled();
+
+    /**
+     * Is fatal enabled?
+     * @return bool
+     */
+    public function isFatalEnabled();
+
+    
     /**
      * Handle an exception
      * @param $e
