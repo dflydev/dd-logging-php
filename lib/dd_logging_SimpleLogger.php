@@ -14,7 +14,7 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * Configuration for level settings for each class.
      * @var array
      */
-    static protected $CLASS_CONFIGURATION = array(
+    static public $CLASS_CONFIGURATION = array(
         '__default__' => array(
             'warn' => true,
             'error' => true,
@@ -65,7 +65,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::trace()
      */
     public function trace($message) {
-        $this->logMessage('trace', $message);
+        if ( $this->isEnabled('trace') )
+            $this->logMessage('trace', $message);
     }
 
     /**
@@ -73,7 +74,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::debug()
      */
     public function debug($message) {
-        $this->logMessage('debug', $message);
+        if ( $this->isEnabled('debug') )
+            $this->logMessage('debug', $message);
     }
     
     /**
@@ -81,7 +83,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::info()
      */
     public function info($message) {
-        $this->logMessage('info', $message);
+        if ( $this->isEnabled('info') )
+            $this->logMessage('info', $message);
     }
     
     /**
@@ -89,7 +92,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::warn()
      */    
     public function warn($message) {
-        $this->logMessage('warn', $message);
+        if ( $this->isEnabled('warn') )
+            $this->logMessage('warn', $message);
     }
 
     /**
@@ -97,7 +101,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::error()
      */
     public function error($message) {
-        $this->logMessage('error', $message);
+        if ( $this->isEnabled('error') )
+            $this->logMessage('error', $message);
     }
     
     /**
@@ -105,7 +110,8 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @see dd_logging_ILogger::fatal()
      */
     public function fatal($message) {
-        $this->logMessage('fatal', $message);
+        if ( $this->isEnabled('fatal') )
+            $this->logMessage('fatal', $message);
     }
     
     /**
