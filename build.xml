@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<project name="dd-logging-php" default="default" basedir=".">
+
+    <property file="build.properties" />
+    
+    <property name="paths.build" value="${project.basedir}/build" />
+    <property name="paths.dist" value="${project.basedir}/dist" />
+    <property name="paths.repo" value="${project.basedir}/repos" />
+    
+    <property name="dd-logging.repository.url" value="git://github.com/dflydev/dd-logging-php.git" />
+    <property name="dd-logging.repository.path" value="${paths.repo}/dd-logging-php" />
+    
+    <fileset dir="${dd-logging.repository.path}/lib" id="dd-logging-libs">
+        <include name="*.php" />
+    </fileset>
+
+    <fileset dir="${dd-logging.repository.path}" id="dd-logging-misc">
+        <include name="README" />
+        <include name="LICENSE" />
+    </fileset>
+    
+    <tstamp>
+        <format property="DSTAMP" pattern="%Y%m%d" />
+        <format property="TSTAMP" pattern="%H%M%S" />
+    </tstamp>
+    
+    <target name="version">
+        <if>
+            <isset property="dd-logging.tag" />
+            <then><property name="dd-logging.version" value="${dd-logging.tag}" /></then>
+            <else>
+                <if>
+                    <not><isset property="dd-logging.snapshotVersion" /></not>
+                    <then>
+                        <property name="dd-logging.snapshotVersion" value="snapshot-${DSTAMP}${TSTAMP}" />
+                    </then>
+                </if>
+                <if>
+                    <isset property="dd-logging.branch" />
+                    <then><property name="dd-logging.version" value="${dd-logging.branch}-${dd-logging.snapshotVersion}" /></then>
+                    <else><property name="dd-logging.version" value="${dd-logging.snapshotVersion}" /></else>
+                </if>
+            </else>
+        </if>
+    </target>
+    
+    <target name="setProperties" depends="version">
+        <property name="dd-logging.pkgname.basic" value="dd-logging-${dd-logging.version}" />
+	    <property name="dd-logging.build.basic.path" value="${paths.build}/${dd-logging.pkgname.basic}" />
+	    <property name="dd-logging.dist.basic.zipfile" value="${paths.dist}/${dd-logging.pkgname.basic}.zip" />
+	    <property name="dd-logging.dist.basic.tgzfile" value="${paths.dist}/${dd-logging.pkgname.basic}.tar.gz" />
+    </target>
+    
+    <target name="prep">
+        <mkdir dir="${paths.build}" />
+        <mkdir dir="${paths.dist}" />
+    </target>
+    
+    <target name="cleanBuild">
+        <delete dir="${paths.build}" />
+    </target>
+    
+    <target name="cleanDist">
+        <delete dir="${paths.dist}" />
+    </target>
+    
+    <target name="cleanRepos">
+        <delete dir="${paths.repos}" />
+    </target>
+    
+    <target name="clean" depends="cleanBuild,cleanDist" />
+    <target name="realClean" depends="clean,cleanRepos" />
+    <target name="realclean" depends="realClean" />
+    
+    <target name="update" depends="prep">
+        <if>
+            <available file="${dd-logging.repository.path}" />
+            <then>
+                <!-- Eventually we want to do a fetch / merge or a pull here -->
+                <!--
+                <delete dir="${dd-logging.repository.path}" />
+                <mkdir dir="${dd-logging.repository.path}" />
+                <gitclone repository="${dd-logging.repository.url}" targetPath="${dd-logging.repository.path}" />
+                -->
+                <gitpull repository="${dd-logging.repository.path}" tags="true" />
+            </then>
+            <else>
+		        <mkdir dir="${dd-logging.repository.path}" />
+		        <gitclone repository="${dd-logging.repository.url}" targetPath="${dd-logging.repository.path}" />
+            </else>
+        </if>
+        <if>
+            <isset property="dd-logging.tag" />
+            <then>
+                <gitcheckout repository="${dd-logging.repository.path}" branchname="v${dd-logging.tag}" />
+            </then>
+            <else>
+                <if>
+                    <isset property="dd-logging.branch" />
+                    <then>
+                        <!--<gitcheckout repository="${dd-logging.repository.path}" create="true" branchname="${dd-logging.branch}" startPoint="origin/${dd-logging.branch}" />-->
+                        <gitcheckout repository="${dd-logging.repository.path}" create="true" branchname="${dd-logging.branch}" startPoint="origin/${dd-logging.branch}" />
+                    </then>
+                    <else>
+                        <gitcheckout repository="${dd-logging.repository.path}" branchname="master" />
+                    </else>
+                </if>
+            </else>
+        </if>
+    </target>
+
+    <target name="buildBasic">
+        <copy toDir="${dd-logging.build.basic.path}" mode="0755">
+            <fileset refid="dd-logging-libs"/>
+            <fileset refid="dd-logging-misc"/>
+        </copy>
+        <chmod mode="0755">
+            <fileset dir="${dd-logging.build.basic.path}">
+                <include name="*.php" />
+                <include name="README" />
+                <include name="LICENSE" />
+            </fileset>
+        </chmod>
+    </target>
+
+    <target name="build" depends="setProperties,update,cleanBuild,buildBasic" />
+    
+    <target name="distBasic" depends="build">
+
+        <mkdir dir="${paths.dist}" />
+
+        <delete file="${dd-logging.dist.basic.tgzfile}" />
+        <tar compression="gzip" destFile="${dd-logging.dist.basic.tgzfile}" basedir="${dd-logging.build.basic.path}" prefix="${dd-logging.pkgname.basic}" />
+
+        <delete file="${dd-logging.dist.basic.zipfile}" />
+        <zip destFile="${dd-logging.dist.basic.zipfile}" basedir="${dd-logging.build.basic.path}" prefix="${dd-logging.pkgname.basic}/" />
+        
+    </target>
+    
+    <target name="dist" depends="distBasic" />
+
+    <target name="default" depends="version">
+        <echo>dd-logging - ${dd-logging.version}</echo>
+        <echo />
+        <echo>Targets:</echo>
+        <echo>    clean      - Cleans build and dist</echo>
+        <echo>    update     - Updates build files</echo>
+        <echo>    build      - Builds package</echo>
+        <echo>    dist       - Creates distribution archives</echo>
+        <echo />
+        <echo>    realclean  - Cleans everything</echo>
+        <echo />
+        <echo>Properties:</echo>
+        <echo>    dd-logging.tag              - dd-logging tag to use</echo>
+        <echo>    dd-logging.branch           - dd-logging branch to use</echo>
+        <echo>    dd-logging.version          - dd-logging version to use</echo>
+        <echo>    dd-logging.snapshotVersion  - dd-logging snapshot version to use (branches)</echo>
+        <echo>    dd-logging.repository.url   - URL for dd-logging Git Repository</echo>
+    </target>
+    
+</project>
