@@ -60,6 +60,14 @@ class dd_logging_LogFactory {
         return $reflectionObject->newInstanceArgs($args);
     }
 
+    /**
+     * Set the default logger
+     * @param $className
+     */
+    static public function SET_DEFAULT_LOGGER($className) {
+        self::$CLASS_NAME = $className;
+    }
+
 }
 
 ?>

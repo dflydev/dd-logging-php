@@ -182,7 +182,15 @@ class dd_logging_SimpleLogger extends dd_logging_AbstractLogger {
      * @param $message
      */
     protected function logMessage($level, $message) {
-        error_log($this->modifiedClassName . ' - ' . $level . ': ' . $message);
+        $this->writeLogMessage($this->modifiedClassName . ' - ' . $level . ': ' . $message);
+    }
+
+    /**
+     * Write a log message.
+     * @param $message
+     */
+    protected function writeLogMessage($message) {
+        error_log($message);
     }
     
 }

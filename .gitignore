@@ -2,6 +2,7 @@
 .project
 .settings
 ._*
+.*.swp
 build
 dist
 repos
